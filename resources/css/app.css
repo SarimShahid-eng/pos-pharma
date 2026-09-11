@@ -1,0 +1,265 @@
+@import "tailwindcss";
+@source "../views/**/*.blade.php";
+
+/* ==========================================================================
+   Design tokens — Tailwind v4 CSS-first theme (replaces tailwind.config.js)
+
+   Re-themed for a medical / pharmacy storefront:
+   - "forest" tokens now carry the primary clinical blue/teal brand color
+     (trust, cleanliness) instead of green.
+   - "wheat" tokens now carry a warm amber, used for warning/pending states
+     (kept distinct from red so "processing" doesn't read as an error).
+   - "tag-red" stays red, used for cancelled/expired/alert states.
+   Variable and utility NAMES are unchanged on purpose so nothing breaks in
+   your existing Blade views — only the color values changed.
+   ========================================================================== */
+@theme {
+    --color-ink: #17222b;
+    --color-muted: #62748a;
+
+    --color-forest: #0e2a40;
+    --color-forest-light: #14b8c4;
+    --color-forest-tint: #e2f7f8;
+
+    --color-paper: #f7fafb;
+    --color-line: #dfe6ea;
+
+    --color-tag-red: #c4342a;
+    --color-tag-red-tint: #fbe8e6;
+
+    --color-wheat: #c17817;
+    --color-wheat-tint: #faf0dd;
+
+    --font-display: "Poppins", serif;
+    --font-sans: "Inter", system-ui, sans-serif;
+    --font-mono: "IBM Plex Mono", monospace;
+
+    --radius-s: 6px;
+    --radius-m: 10px;
+
+    --shadow-card: 0 1px 2px rgba(23, 34, 43, 0.04), 0 6px 20px -8px rgba(23, 34, 43, 0.10);
+}
+
+@layer base {
+    body {
+        @apply bg-paper text-ink font-sans antialiased;
+    }
+}
+
+* {
+    scrollbar-width: thin;
+    scrollbar-color: var(--color-forest-light) transparent;
+}
+
+/* WebKit-based Browsers (Chrome, Safari, Edge) */
+::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+}
+
+::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+    background: var(--color-forest-light);
+    border-radius: 9999px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: var(--color-wheat);
+    /* Amber highlight on hover */
+}
+
+/* ==========================================================================
+   Custom utilities — Tailwind v4 uses @utility instead of @layer components,
+   so these compose correctly with variants (hover:, md:, etc.) if needed.
+   ========================================================================== */
+
+@utility ticket {
+    @apply relative flex overflow-hidden rounded-[var(--radius-m)] border border-line bg-white shadow-[var(--shadow-card)];
+}
+
+@utility ticket-stub {
+    @apply relative w-2;
+    background-image: repeating-linear-gradient(var(--color-forest),
+            var(--color-forest) 6px,
+            transparent 6px,
+            transparent 12px);
+    ;
+}
+
+@utility nav-link {
+    @apply flex items-center gap-2.5 rounded-[var(--radius-s)] px-2.5 py-2 text-[13.5px] font-medium text-slate-200 transition-colors hover:bg-white/10 hover:text-white;
+}
+
+@utility pill {
+    @apply inline-block rounded-full px-2.5 py-1 text-[11px] font-semibold;
+}
+
+@utility pill-warn {
+    @apply bg-wheat-tint text-wheat;
+}
+
+@utility pill-completed {
+    @apply bg-forest-tint text-forest;
+}
+
+@utility pill-processing {
+    @apply bg-wheat-tint text-wheat;
+}
+
+@utility pill-cancelled {
+    @apply bg-tag-red-tint text-tag-red;
+}
+
+@utility panel {
+    @apply rounded-[var(--radius-m)] border border-line bg-white p-5 shadow-[var(--shadow-card)];
+}
+
+[x-cloak] {
+    display: none !important;
+}
+
+/* Pseudo-elements can't go through @apply, so the notch + stamp marks are
+   plain CSS, scoped to the utility classes above. */
+.ticket-stub::before,
+.ticket-stub::after {
+    content: "";
+    position: absolute;
+    left: -6px;
+    width: 12px;
+    height: 12px;
+    border-radius: 9999px;
+    border: 1px solid var(--color-line);
+    background: var(--color-paper);
+}
+
+.ticket-stub::before {
+    top: -6px;
+}
+
+.ticket-stub::after {
+    bottom: -6px;
+}
+
+.nav-link.active {
+    position: relative;
+    background: var(--color-forest-light);
+    color: #fff;
+}
+
+.nav-link.active::after {
+    content: "";
+    position: absolute;
+    right: 8px;
+    top: 50%;
+    width: 7px;
+    height: 7px;
+    transform: translateY(-50%) rotate(-8deg);
+    border: 1.5px solid var(--color-wheat);
+    border-radius: 9999px;
+}
+
+
+/* Main Box Container */
+.select2-container--default .select2-selection--single {
+    height: 40px !important;
+    display: flex !important;
+    align-items: center !important;
+    padding: 0 12px !important;
+    border: 1px solid var(--color-line, #d1d5db) !important;
+    border-radius: var(--radius-s, 0.375rem) !important;
+    background-color: var(--color-paper, #ffffff) !important;
+    box-sizing: border-box !important;
+}
+
+/* Text & Placeholder Styling */
+.select2-container--default .select2-selection--single .select2-selection__rendered {
+    color: var(--color-ink, #1f2937) !important;
+    font-size: 0.875rem !important;
+    /* text-sm */
+    line-height: normal !important;
+    padding-left: 0 !important;
+    padding-right: 24px !important;
+    margin: 0 !important;
+    display: flex !important;
+    align-items: center !important;
+    width: 100% !important;
+}
+
+/* Placeholder State */
+.select2-container--default .select2-selection--single .select2-selection__placeholder {
+    color: #9ca3af !important;
+}
+
+/* Right Dropdown Arrow Icon */
+.select2-container--default .select2-selection--single .select2-selection__arrow {
+    height: 100% !important;
+    top: 0 !important;
+    right: 10px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+}
+
+.select2-container--default .select2-selection--single .select2-selection__arrow b {
+    position: static !important;
+    margin-top: 0 !important;
+    margin-left: 0 !important;
+    border-color: #6b7280 transparent transparent transparent !important;
+}
+
+/* Focus and Open State */
+.select2-container--default.select2-container--focus .select2-selection--single,
+.select2-container--default.select2-container--open .select2-selection--single {
+    border-color: var(--color-forest-light, #14b8c4) !important;
+    outline: none !important;
+    box-shadow: 0 0 0 1px var(--color-forest-light, #14b8c4) !important;
+}
+
+.select2-dropdown {
+    border: 1px solid var(--color-line, #d1d5db) !important;
+    border-radius: var(--radius-s, 0.375rem) !important;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08) !important;
+    overflow: hidden !important;
+    z-index: 9999 !important;
+}
+
+/* Search Box Container Padding */
+.select2-container--default .select2-search--dropdown {
+    padding: 6px !important;
+}
+
+/* Search Box Input Field Override */
+.select2-container--default .select2-search--dropdown .select2-search__field {
+    border: 1px solid var(--color-line, #e2e8f0) !important;
+    border-radius: var(--radius-s, 0.375rem) !important;
+    background-color: var(--color-paper, #fcfbf9) !important;
+    padding: 6px 10px !important;
+    font-size: 0.875rem !important;
+    outline: none !important;
+}
+
+.select2-container--default .select2-search--dropdown .select2-search__field:focus {
+    border-color: var(--color-forest-light, #14b8c4) !important;
+    box-shadow: 0 0 0 1px var(--color-forest-light, #14b8c4) !important;
+}
+
+/* Highlighted Hover Item (Replaces Default Blue with Brand Blue) */
+.select2-container--default .select2-results__option--highlighted[aria-selected] {
+    background-color: var(--color-forest-light, #14b8c4) !important;
+    color: #ffffff !important;
+}
+
+/* Selected Active Option */
+.select2-container--default .select2-results__option[aria-selected="true"] {
+    /* background-color: var(--color-paper, #fcfbf9) !important; */
+    font-weight: 600 !important;
+}
+
+.select2-container--default .select2-results__option {
+    padding: 8px 12px !important;
+    font-size: 0.875rem !important;
+    color: var(--color-ink, #1f2937) !important;
+}

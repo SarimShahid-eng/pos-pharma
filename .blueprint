@@ -1,0 +1,56 @@
+created:
+    - database/factories/SupplierFactory.php
+    - database/factories/ProductFactory.php
+    - database/factories/PurchaseFactory.php
+    - database/factories/PurchaseItemFactory.php
+    - database/factories/SaleFactory.php
+    - database/factories/SaleItemFactory.php
+    - database/factories/SupplierPaymentFactory.php
+    - database/factories/PurchaseReturnFactory.php
+    - database/factories/PurchaseReturnItemFactory.php
+    - database/factories/SaleReturnFactory.php
+    - database/factories/SaleReturnItemFactory.php
+    - database/factories/ProductHistoryFactory.php
+    - database/migrations/2026_08_09_103210_create_suppliers_table.php
+    - database/migrations/2026_08_09_103211_create_products_table.php
+    - database/migrations/2026_08_09_103212_create_purchases_table.php
+    - database/migrations/2026_08_09_103213_create_purchase_items_table.php
+    - database/migrations/2026_08_09_103214_create_sales_table.php
+    - database/migrations/2026_08_09_103215_create_sale_items_table.php
+    - database/migrations/2026_08_09_103216_create_supplier_payments_table.php
+    - database/migrations/2026_08_09_103217_create_purchase_returns_table.php
+    - database/migrations/2026_08_09_103218_create_purchase_return_items_table.php
+    - database/migrations/2026_08_09_103219_create_sale_returns_table.php
+    - database/migrations/2026_08_09_103220_create_sale_return_items_table.php
+    - database/migrations/2026_08_09_103221_create_product_histories_table.php
+    - app/Models/Supplier.php
+    - app/Models/Product.php
+    - app/Models/Purchase.php
+    - app/Models/PurchaseItem.php
+    - app/Models/Sale.php
+    - app/Models/SaleItem.php
+    - app/Models/SupplierPayment.php
+    - app/Models/PurchaseReturn.php
+    - app/Models/PurchaseReturnItem.php
+    - app/Models/SaleReturn.php
+    - app/Models/SaleReturnItem.php
+    - app/Models/ProductHistory.php
+models:
+    Account: { name: string, type: 'enum:cash,bank,supplier,expense', opening_balance: 'decimal:12,2 default:0', balance: 'decimal:12,2 default:0', balance_type: 'enum:debit,credit', timestamps: timestamps, relationships: { hasOne: AccountDetail, hasMany: 'AccountEntry, Purchase, Sale, Expense, Payment, PurchaseReturn' } }
+    AccountDetail: { fathername: 'string nullable', phone_number: 'string nullable', account_id: 'id foreign:accounts.id', timestamps: timestamps, relationships: { belongsTo: Account } }
+    Transaction: { type: 'enum:purchase,sale,expense,payment,adjustment,purchase_return,sale_return', voucher_no: 'string nullable index', date: date, timestamps: timestamps, relationships: { hasMany: 'AccountEntry, Purchase, Sale, Expense, Payment, PurchaseReturn, SaleReturn' } }
+    AccountEntry: { transaction_id: 'id foreign:transactions.id', account_id: 'id foreign:accounts.id', amount: 'decimal:12,2', type: 'enum:debit,credit', timestamps: timestamps, relationships: { belongsTo: 'Transaction, Account' } }
+    Product: { barcode: 'string unique index', label_title: 'string nullable', name: string, unit: 'string default:pcs', cost_price: 'decimal:12,2 default:0', sale_price: 'decimal:12,2 default:0', discount: 'decimal:12,2 default:0', profit: 'decimal:12,2 default:0', stock_qty: 'decimal:12,2 default:0', timestamps: timestamps, relationships: { hasMany: 'ProductHistory, PurchaseItem, SaleItem, PurchaseReturnItem, SaleReturnItem' } }
+    ProductHistory: { product_id: 'id foreign:products.id', qty: 'decimal:12,2', type: 'enum:purchase,sale,purchase_return,sale_return,adjustment', reference_id: 'integer nullable', reference_type: 'string nullable', timestamps: timestamps, relationships: { belongsTo: Product } }
+    Purchase: { invoice_number: 'string unique index', reference_number: 'string nullable', supplier_id: 'id foreign:suppliers.id', total_amount: 'decimal:12,2', discount_amount: 'decimal:12,2 default:0', paid_amount: 'decimal:12,2 default:0', remaining_amount: 'decimal:12,2 default:0', date: date, notes: 'text nullable', timestamps: timestamps, relationships: { belongsTo: Supplier, hasMany: 'PurchaseItem, PurchaseReturn, SupplierPayment' } }
+    PurchaseItem: { purchase_id: 'id foreign:purchases.id ondelete:cascade', product_id: 'id foreign:products.id', qty: 'decimal:12,2', bonus_qty: 'decimal:12,2 default:0', rate: 'decimal:12,2', amount: 'decimal:12,2', timestamps: timestamps, relationships: { belongsTo: 'Purchase, Product' } }
+    Sale: { invoice_number: 'string unique index', total_amount: 'decimal:12,2', discount_amount: 'decimal:12,2 default:0', net_amount: 'decimal:12,2', received_amount: 'decimal:12,2 default:0', change_given: 'decimal:12,2 default:0', payment_method: 'enum:cash,card,bank default:cash', date: date, timestamps: timestamps, relationships: { hasMany: 'SaleItem, SaleReturn' } }
+    SaleItem: { sale_id: 'id foreign:sales.id ondelete:cascade', product_id: 'id foreign:products.id', qty: 'decimal:12,2', rate: 'decimal:12,2', discount: 'decimal:12,2 default:0', after_discount_price: 'decimal:12,2', amount: 'decimal:12,2', timestamps: timestamps, relationships: { belongsTo: 'Sale, Product' } }
+    PurchaseReturn: { purchase_id: 'id foreign:purchases.id', supplier_id: 'id foreign:suppliers.id', total_amount: 'decimal:12,2', date: date, notes: 'text nullable', timestamps: timestamps, relationships: { belongsTo: 'Purchase, Supplier', hasMany: PurchaseReturnItem } }
+    PurchaseReturnItem: { purchase_return_id: 'id foreign:purchase_returns.id ondelete:cascade', product_id: 'id foreign:products.id', qty: 'decimal:12,2', rate: 'decimal:12,2', amount: 'decimal:12,2', timestamps: timestamps, relationships: { belongsTo: 'PurchaseReturn, Product' } }
+    SaleReturn: { sale_id: 'id foreign:sales.id', total_amount: 'decimal:12,2', refunded_amount: 'decimal:12,2 default:0', date: date, notes: 'text nullable', timestamps: timestamps, relationships: { belongsTo: Sale, hasMany: SaleReturnItem } }
+    SaleReturnItem: { sale_return_id: 'id foreign:sale_returns.id ondelete:cascade', product_id: 'id foreign:products.id', qty: 'decimal:12,2', rate: 'decimal:12,2', amount: 'decimal:12,2', timestamps: timestamps, relationships: { belongsTo: 'SaleReturn, Product' } }
+    Expense: { account_id: 'id foreign:accounts.id', payment_account_id: 'id foreign:accounts.id', transaction_id: 'id foreign:transactions.id', amount: 'decimal:12,2', description: 'string nullable', date: date, timestamps: timestamps, relationships: { belongsTo: 'Account, Transaction' } }
+    Payment: { account_id: 'id foreign:accounts.id', payment_account_id: 'id foreign:accounts.id', transaction_id: 'id foreign:transactions.id', type: 'enum:cash,bank', amount: 'decimal:12,2', description: 'string nullable', date: date, timestamps: timestamps, relationships: { belongsTo: 'Account, Transaction' } }
+    Supplier: { name: string, phone_number: 'string nullable', opening_balance: 'decimal:12,2 default:0', current_balance: 'decimal:12,2 default:0', timestamps: timestamps, relationships: { hasMany: 'Purchase, SupplierPayment, PurchaseReturn' } }
+    SupplierPayment: { supplier_id: 'id foreign:suppliers.id', payment_method: 'enum:cash,bank default:cash', amount: 'decimal:12,2', purchase_id: 'foreign:purchases,id nullable', reference_no: 'string nullable', date: date, notes: 'text nullable', timestamps: timestamps, relationships: { belongsTo: 'Supplier, Purchase' } }
