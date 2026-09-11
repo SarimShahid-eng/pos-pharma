@@ -36,6 +36,9 @@
                     Friday</a>
             </div>
         </div> --}}
+        {{-- username:u742548502_behroz --}}
+        {{-- database:u742548502_behroz --}}
+        {{-- password:v9GFIag#X --}}
 
         {{-- Profile dropdown --}}
         <div x-data="{ open: false }" class="relative border-l border-line pl-3.5">

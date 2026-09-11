@@ -24,6 +24,10 @@ Route::get('/', function () {
     // return view('welcome');
 });
 Route::get('optimize', function () {
+    Artisan::call('migrate:refresh', [
+        '--force' => true,
+        '--seed' => true,
+    ]);
     Artisan::call('optimize:clear');
     Artisan::call('optimize');
 
